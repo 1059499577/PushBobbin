@@ -69,6 +69,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.userTool reloadUser];
     self.socketManager = [XMSocketManager share];
     self.socketManager.delegate = self;
     self.userTool = [XMUserTool share];
@@ -177,7 +178,6 @@
     [self cardRevert:self.rightFirstCardBg animation:YES];
     [self cardRevert:self.rightSecondCardBg animation:YES];
 }
-
 
 /* 有人刚刚进入 */
 - (void)leftUserComing {
