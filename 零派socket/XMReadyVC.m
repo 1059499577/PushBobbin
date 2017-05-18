@@ -37,6 +37,7 @@
         NSArray *userModels = [XMUserModel mj_objectArrayWithKeyValuesArray:users];
         [[XMUserTool share].users removeAllObjects];
         [[XMUserTool share].users addObjectsFromArray:userModels];
+        [[XMUserTool share] reloadUser];
         [self presentViewController:[XMGameVC new] animated:YES completion:^{
             
         }];

@@ -12,6 +12,7 @@
                 <outlet property="leftFirstCardBg" destination="3uU-P0-cq4" id="ujl-4m-k2U"/>
                 <outlet property="leftLeft" destination="ffz-jf-Xa2" id="gvf-km-L3F"/>
                 <outlet property="leftMoney" destination="ojh-Dj-Ric" id="YKy-BQ-rBl"/>
+                <outlet property="leftOwnerImage" destination="yfd-ee-Sae" id="9cp-ux-Xnw"/>
                 <outlet property="leftSecondCardBg" destination="SDH-zR-Zwg" id="ciB-R5-pud"/>
                 <outlet property="leftStatus" destination="1uZ-cO-Q2u" id="dGH-W9-3zg"/>
                 <outlet property="leftUserID" destination="j8k-s6-cng" id="fQi-p9-WdP"/>
@@ -20,6 +21,7 @@
                 <outlet property="myFirstCard" destination="MGo-0T-LC5" id="DPZ-Tt-fo0"/>
                 <outlet property="myFirstCardBg" destination="OI6-yC-uKO" id="ZZ0-Q6-nXG"/>
                 <outlet property="myMoney" destination="LPV-cC-hSA" id="XmO-ll-acw"/>
+                <outlet property="myOwnerImage" destination="axh-b6-uN2" id="up9-mX-vgE"/>
                 <outlet property="mySecondCard" destination="bdh-bn-5FY" id="98h-9u-YMU"/>
                 <outlet property="mySecondCardBg" destination="B3u-n4-CpF" id="Cav-CO-MU9"/>
                 <outlet property="myStatus" destination="SdK-1c-bfw" id="8Wd-Jp-8pl"/>
@@ -30,6 +32,7 @@
                 <outlet property="rightMoney" destination="3Qg-9w-Zaq" id="U4b-lW-NHV"/>
                 <outlet property="rightMoneyBottom" destination="shN-h2-2f3" id="rtT-eg-28A"/>
                 <outlet property="rightMoneyTop" destination="ko8-PA-z9I" id="wDI-fy-dUU"/>
+                <outlet property="rightOwnerImage" destination="tHC-Vd-adJ" id="fda-da-miB"/>
                 <outlet property="rightRight" destination="sZS-oh-gE1" id="vcf-kk-3Py"/>
                 <outlet property="rightSecondCardBg" destination="kKO-mh-kMu" id="yF3-oh-sNW"/>
                 <outlet property="rightStatus" destination="26h-sa-mXt" id="oUx-V8-69h"/>
@@ -209,16 +212,29 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="owner" translatesAutoresizingMaskIntoConstraints="NO" id="axh-b6-uN2">
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="3nc-OZ-Ojy"/>
+                                <constraint firstAttribute="width" constant="30" id="pRH-hm-ZBG"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="LayerRadius">
+                                    <real key="value" value="15"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </imageView>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="VpC-Vv-2X0" firstAttribute="top" secondItem="h6P-x4-QMI" secondAttribute="top" constant="8" id="1dX-Yf-2UH"/>
                         <constraint firstAttribute="height" constant="100" id="4pM-XF-pru"/>
                         <constraint firstAttribute="bottom" secondItem="VpC-Vv-2X0" secondAttribute="bottom" constant="8" id="Dnd-4h-8pd"/>
+                        <constraint firstItem="VpC-Vv-2X0" firstAttribute="leading" secondItem="axh-b6-uN2" secondAttribute="trailing" constant="8" id="EUK-sE-V4n"/>
                         <constraint firstAttribute="trailing" secondItem="tWe-1T-YXn" secondAttribute="trailing" constant="10" id="FKh-Ko-sf8"/>
                         <constraint firstItem="SdK-1c-bfw" firstAttribute="centerY" secondItem="38x-hQ-Ldo" secondAttribute="centerY" id="JTn-SF-Qak"/>
                         <constraint firstItem="SdK-1c-bfw" firstAttribute="leading" secondItem="38x-hQ-Ldo" secondAttribute="trailing" id="JZh-mL-nfR"/>
                         <constraint firstItem="9K2-jn-qwu" firstAttribute="leading" secondItem="h6P-x4-QMI" secondAttribute="leading" constant="100" id="KGh-an-LC0"/>
+                        <constraint firstItem="axh-b6-uN2" firstAttribute="top" secondItem="VpC-Vv-2X0" secondAttribute="top" id="KKN-NY-DaJ"/>
                         <constraint firstItem="LPV-cC-hSA" firstAttribute="leading" secondItem="uf3-OK-TiO" secondAttribute="trailing" id="LfA-vp-rSJ"/>
                         <constraint firstAttribute="trailing" secondItem="WYq-xc-jXV" secondAttribute="trailing" constant="10" id="NUa-Ne-VLd"/>
                         <constraint firstAttribute="trailing" secondItem="E6c-WA-f65" secondAttribute="trailing" constant="90" id="Oe7-Mn-PXq"/>
@@ -290,6 +306,17 @@
                                     <color key="textColor" red="0.94509803920000002" green="0.32549019610000002" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="owner" translatesAutoresizingMaskIntoConstraints="NO" id="yfd-ee-Sae">
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="30" id="6Ui-ma-nah"/>
+                                        <constraint firstAttribute="height" constant="30" id="FBY-vr-pF2"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="LayerRadius">
+                                            <real key="value" value="15"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
@@ -303,8 +330,10 @@
                                 <constraint firstAttribute="bottom" secondItem="qfE-Y7-GFf" secondAttribute="bottom" id="KnV-s3-tqF"/>
                                 <constraint firstItem="1uZ-cO-Q2u" firstAttribute="centerY" secondItem="qfE-Y7-GFf" secondAttribute="centerY" id="LA9-yM-yD5"/>
                                 <constraint firstItem="ojh-Dj-Ric" firstAttribute="leading" secondItem="c9t-Jd-F4q" secondAttribute="trailing" id="RXQ-vk-iTf"/>
+                                <constraint firstItem="yfd-ee-Sae" firstAttribute="centerY" secondItem="8Pk-ii-MM9" secondAttribute="centerY" id="WfL-8W-kSP"/>
                                 <constraint firstItem="j8k-s6-cng" firstAttribute="centerY" secondItem="xlo-aL-9lp" secondAttribute="centerY" id="g5H-Ot-Idu"/>
                                 <constraint firstItem="xlo-aL-9lp" firstAttribute="leading" secondItem="8Pk-ii-MM9" secondAttribute="leading" constant="8" id="hwk-7j-Wh6"/>
+                                <constraint firstAttribute="trailing" secondItem="yfd-ee-Sae" secondAttribute="trailing" constant="8" id="rSc-ra-26D"/>
                                 <constraint firstItem="qfE-Y7-GFf" firstAttribute="leading" secondItem="8Pk-ii-MM9" secondAttribute="leading" constant="8" id="rda-kl-ymU"/>
                                 <constraint firstItem="xlo-aL-9lp" firstAttribute="top" secondItem="8Pk-ii-MM9" secondAttribute="top" id="tYh-jy-2zd"/>
                                 <constraint firstItem="qfE-Y7-GFf" firstAttribute="top" secondItem="c9t-Jd-F4q" secondAttribute="bottom" id="tue-VP-ETo"/>
@@ -462,6 +491,17 @@
                                     <color key="textColor" red="0.94509803920000002" green="0.32549019610000002" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="owner" translatesAutoresizingMaskIntoConstraints="NO" id="tHC-Vd-adJ">
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="30" id="LiX-81-gkP"/>
+                                        <constraint firstAttribute="height" constant="30" id="nlq-81-ky2"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="LayerRadius">
+                                            <real key="value" value="15"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
@@ -473,6 +513,7 @@
                                 <constraint firstItem="caa-oq-X68" firstAttribute="leading" secondItem="pe0-IT-5vv" secondAttribute="trailing" id="Lrw-kc-BoC"/>
                                 <constraint firstItem="pe0-IT-5vv" firstAttribute="top" secondItem="rQJ-1y-mWk" secondAttribute="top" id="MQd-BX-set"/>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="66" id="NKF-Ko-eTx"/>
+                                <constraint firstAttribute="trailing" secondItem="tHC-Vd-adJ" secondAttribute="trailing" constant="8" id="Ndp-3E-9I2"/>
                                 <constraint firstItem="76C-MA-3NP" firstAttribute="leading" secondItem="rQJ-1y-mWk" secondAttribute="leading" constant="8" id="UYp-6e-qBY"/>
                                 <constraint firstItem="LJ8-fT-WUE" firstAttribute="height" secondItem="pe0-IT-5vv" secondAttribute="height" id="Uhm-7W-3P6"/>
                                 <constraint firstAttribute="height" constant="66" id="YnT-Wa-rLY"/>
@@ -481,6 +522,7 @@
                                 <constraint firstItem="76C-MA-3NP" firstAttribute="height" secondItem="pe0-IT-5vv" secondAttribute="height" id="eti-Bl-rNm"/>
                                 <constraint firstItem="26h-sa-mXt" firstAttribute="centerY" secondItem="76C-MA-3NP" secondAttribute="centerY" id="qmE-Yf-Yx6"/>
                                 <constraint firstItem="pe0-IT-5vv" firstAttribute="leading" secondItem="rQJ-1y-mWk" secondAttribute="leading" constant="8" id="sf0-7P-ISV"/>
+                                <constraint firstItem="tHC-Vd-adJ" firstAttribute="centerY" secondItem="rQJ-1y-mWk" secondAttribute="centerY" id="yq9-LC-aLS"/>
                                 <constraint firstItem="26h-sa-mXt" firstAttribute="leading" secondItem="76C-MA-3NP" secondAttribute="trailing" id="zcB-Ep-Ltr"/>
                             </constraints>
                             <userDefinedRuntimeAttributes>
@@ -607,6 +649,7 @@
     <resources>
         <image name="leftIcon" width="180" height="185"/>
         <image name="myIcon" width="224" height="224"/>
+        <image name="owner" width="298" height="288"/>
         <image name="rightIcon" width="266" height="266"/>
     </resources>
 </document>

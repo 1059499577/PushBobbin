@@ -10,5 +10,7 @@
 
 
 @implementation XMUserModel
-
+- (BOOL)isOwner {
+    return [self.is_owner isEqualToString:@"1"];
+}
 @end

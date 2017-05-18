@@ -8,10 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import "XMUserModel.h"
+
+#define kLeftUserComming @"kLeftUserComming"
+#define kRightUserComming @"kRightUserComming"
+
 @interface XMUserTool : NSObject
 @property (nonatomic, strong) XMUserModel *myUser;
+@property (nonatomic, strong) XMUserModel *leftUser;
+@property (nonatomic, strong) XMUserModel *rightUser;
 @property (nonatomic , retain)NSMutableArray *users;
 @property (nonatomic, copy) NSString *room_id;
-
+- (void)reloadUser;
 + (instancetype)share;
 @end

@@ -103,7 +103,7 @@ static const uint16_t Kport = 8282;
     NSLog(@"主机连接成功");
     self.socketStatus = SocketStatus_connect;
     [self pullTheMsg];
-    [self initHeardBeat];
+//    [self initHeardBeat];
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err {
@@ -128,33 +128,19 @@ static const uint16_t Kport = 8282;
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-    switch (tag) {
-        case kMessageTag: {
-            NSString *msg = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"收到消息：%@",msg);
-            if ([self.delegate respondsToSelector:@selector(SocketManagerDidReceiveMessage:)]) {
-                [self.delegate SocketManagerDidReceiveMessage:msg];
-            }
+    NSError *error = nil;
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    if (error == nil) {
+        if ([self.delegate respondsToSelector:@selector(SocketManagerDidReceiveDict:)]) {
+            [self.delegate SocketManagerDidReceiveDict:dict];
+            NSLog(@"%@",dict);
         }
-            break;
-        case kDictionaryTag: {
-            NSError *error = nil;
-            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-            NSLog(@"收到json消息：%@",dict);
-            if (error) {
-                break;
-            }
-            if ([self.delegate respondsToSelector:@selector(SocketManagerDidReceiveDict:)]) {
-                [self.delegate SocketManagerDidReceiveDict:dict];
-            }
+    } else {
+        NSString *msg = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+        if ([self.delegate respondsToSelector:@selector(SocketManagerDidReceiveMessage:)]) {
+            [self.delegate SocketManagerDidReceiveMessage:msg];
         }
-            break;
-        case kPingTag:
-            
-            break;
-        default:
-            break;
-    }   
+    }
     [self pullTheMsg];
 }
 

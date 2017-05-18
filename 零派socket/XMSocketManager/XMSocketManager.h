@@ -29,8 +29,8 @@ typedef NS_ENUM(NSUInteger, SocketStatus) {
 @property (nonatomic, assign) SocketStatus socketStatus;
 @property (nonatomic, weak) id<XMSocketManagerDelegate>delegate;
 + (instancetype)share;
-- (void)addSocketDelegate:(id<XMSocketManagerDelegate>)delegate;
-- (void)removeSocketDelegate:(id<XMSocketManagerDelegate>)delegate;
+//- (void)addSocketDelegate:(id<XMSocketManagerDelegate>)delegate;
+//- (void)removeSocketDelegate:(id<XMSocketManagerDelegate>)delegate;
 - (BOOL)connect;
 - (void)disconnect;
 - (void)sendMessage:(NSString *)message;
