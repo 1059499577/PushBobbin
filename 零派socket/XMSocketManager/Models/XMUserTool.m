@@ -21,7 +21,7 @@
 }
 
 - (void)reloadUser {
-    if (self.myUser.user_id == nil) {
+    if (self.myUser == nil) {
         return;
     }
     for (XMUserModel *user in self.users) {

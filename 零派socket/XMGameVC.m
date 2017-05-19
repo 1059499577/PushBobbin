@@ -123,23 +123,23 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         self.myMoney.text = myUser.money;
         self.myOwnerImage.hidden = !myUser.isOwner;
         self.startButtonBg.hidden = !myUser.isOwner;
-        self.myStatus.text = @"已下注";
+        self.myStatus.text = myUser.payMoney == nil?@"未下注":@"已下注";
     }
     XMUserModel *leftUser = self.userTool.leftUser;
     if (leftUser != nil) {
         self.leftUserID.text = leftUser.user_id;
         self.leftMoney.text = leftUser.money;
         self.leftOwnerImage.hidden = !leftUser.isOwner;
-        self.leftStatus.text = @"已下注";
-        self.payMoney.text = leftUser.formatPayMoney;
+        self.leftStatus.text = leftUser.payMoney == nil?@"未下注":@"已下注";
+        self.leftPayMoney.text = leftUser.formatPayMoney;
     }
     XMUserModel *rightUser = self.userTool.rightUser;
     if (rightUser != nil) {
         self.rightUserID.text = rightUser.user_id;
         self.rightMoney.text = rightUser.money;
         self.rightOwnerImage.hidden = !rightUser.isOwner;
-        self.rightStatus.text = @"已下注";
-        self.payMoney.text = rightUser.formatPayMoney;
+        self.rightStatus.text = rightUser.payMoney == nil?@"未下注":@"已下注";
+        self.rightPayMoney.text = rightUser.formatPayMoney;
     }
 }
 
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
                                    @"room_id":roomID,
                                    @"user_id":userID,
                                    @"money":moneyStr}];
-    [self startButtonEnable:NO];
+    [self begainButtonEnable:NO];
 }
 
 /* 庄家开始发牌 */
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
             self.selectMoney = 10;
             break;
         case 2:
-            self.selectMoney = 15;
+            self.selectMoney = 20;
             break;
         default:
             break;
@@ -264,12 +264,12 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 
 - (void)begainButtonEnable:(BOOL)enable {
     self.begainButton.enabled = enable;
-    self.begainButton.backgroundColor = enable?[UIColor colorWithRed:1 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
+    self.begainButton.backgroundColor = enable?[UIColor colorWithRed:1.0 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
 }
 
 - (void)startButtonEnable:(BOOL)enable {
     self.startButton.enabled = enable;
-    self.startButton.backgroundColor = enable?[UIColor colorWithRed:1 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
+    self.startButton.backgroundColor = enable?[UIColor colorWithRed:1.0 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
 }
 
 #pragma mark - Getter & Setter
