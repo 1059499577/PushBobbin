@@ -14,6 +14,7 @@
 #import <MJExtension.h>
 #import "XMSocketManager.h"
 
+
 typedef NS_ENUM(NSUInteger, GameProgress) {
     GameProgress_RoomNotFull,//人不全
     GameProgress_RoomFull,//人刚刚全了
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 @property (weak, nonatomic) IBOutlet UIButton *startButton;
 @property (nonatomic, assign) int selectMoney;//选择的押注金额
 @property (nonatomic, assign) BOOL isPayLock;//我下注锁定
+@property (weak, nonatomic) IBOutlet UIView *leftCardBg;
 
 
 /* 左边小人 */
@@ -72,6 +74,11 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 @property (nonatomic, weak) XMUserTool *userTool;
 @property (nonatomic, strong) XMSocketManager *socketManager;
 @property (nonatomic, assign) GameProgress gameProgress;//游戏进度
+
+@property (nonatomic, strong) NSTimer *putCardTimer;
+@property (nonatomic, strong) NSArray *cardBgs;
+@property (nonatomic, assign)int putCardIndex;
+
 
 @end
 
@@ -160,11 +167,17 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
                                    @"user_id":userID,
                                    @"money":moneyStr}];
     [self begainButtonEnable:NO];
+    [self payButtongEnable:NO];
 }
 
 /* 庄家开始发牌 */
 - (IBAction)ownerStartAction:(id)sender {
-    
+    NSString *roomID = self.userTool.room_id;
+    NSString *userID = self.userTool.myUser.user_id;
+    [self.socketManager sendDict:@{@"type":@"deal",
+                                   @"room_id":roomID,
+                                   @"user_id":userID}];
+    [self startButtonEnable:NO];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -186,31 +199,24 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 - (void)cardRevert:(UIView *)card animation:(BOOL)animate {
     if (animate) {
         [UIView animateWithDuration:1 animations:^{
-            card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI, 0, 1, 0);
-            card.backgroundColor = [UIColor whiteColor];
-            for (UIView *subView in card.subviews) {
-                subView.alpha = 1;
-            }
+            card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI_2, 0, 1, 0);
         } completion:^(BOOL finished) {
-            
+            [card setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"3"]]];
+            [UIView animateWithDuration:1 animations:^{
+                card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI_2, 0, 1, 0);
+            } completion:^(BOOL finished) {
+                
+            }];
         }];
     } else {
         card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI, 0, 1, 0);
-        card.backgroundColor = [UIColor greenColor];
+        card.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"CardBg"]] ;
+        card.contentMode = UIViewContentModeScaleAspectFit;
         for (UIView *subView in card.subviews) {
             subView.alpha = 0;
         }
+        card.hidden= YES;
     }
-}
-
-/* 全体翻牌 */
-- (void)allUserRevertCards {
-    [self cardRevert:self.myFirstCardBg animation:YES];
-    [self cardRevert:self.mySecondCardBg animation:YES];
-    [self cardRevert:self.leftFirstCardBg animation:YES];
-    [self cardRevert:self.leftSecondCardBg animation:YES];
-    [self cardRevert:self.rightFirstCardBg animation:YES];
-    [self cardRevert:self.rightSecondCardBg animation:YES];
 }
 
 /* 有人刚刚进入 */
@@ -254,12 +260,14 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
             self.gameProgress = GameProgress_PayFinish;
         }
         [self reloadUserOnSeat];
+    } else if ([type isEqualToString:@"over"]) {
+        
     }
 }
 
 - (void)payButtongEnable:(BOOL)enable {
     self.payButton.enabled = enable;
-    self.payButton.backgroundColor = enable?[UIColor colorWithRed:43/255.0 green:119/255.0 blue:119/255.0 alpha:1]:[UIColor grayColor];
+    self.payButton.backgroundColor = enable?[UIColor colorWithRed:43/255.0 green:191/255.0 blue:191/255.0 alpha:1]:[UIColor grayColor];
 }
 
 - (void)begainButtonEnable:(BOOL)enable {
@@ -273,7 +281,6 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 }
 
 #pragma mark - Getter & Setter
-
 - (void)setGameProgress:(GameProgress)gameProgress {
     switch (gameProgress) {
         case GameProgress_RoomNotFull: {
@@ -286,6 +293,15 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
                 [self payButtongEnable:YES];
                 self.selectMoney = 5;
             }
+        }
+            break;
+        case GameProgress_PayFinish: {
+            NSLog(@"平家都押注完了");
+            
+        }
+            break;
+        case GameProgress_OwnerStarted: {
+            NSLog(@"庄家发牌完成");
         }
             break;
             
@@ -304,6 +320,58 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
     } else {
         [self begainButtonEnable:NO];
     }
+}
+/* 发单张牌 */
+- (void)putCard:(UIView *)card {
+    CGRect endFrame = [card.superview convertRect:card.frame toView:self.view];
+    CGFloat W = 50;
+    CGFloat H = 68;
+    CGFloat X = (kScreenWidth - W) * 0.5;
+    CGFloat Y = (kScreenHeight - 100 - H) * 0.5;
+    UIView *tmpCard = [[UIView alloc] initWithFrame:CGRectMake(X, Y, W, H)];
+    tmpCard.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"CardBg"]];
+    tmpCard.contentMode = UIViewContentModeScaleAspectFit;
+    tmpCard.layer.cornerRadius = 5;
+    tmpCard.layer.masksToBounds = YES;
+    [self.view addSubview:tmpCard];
+    [self.view layoutIfNeeded];
+    [UIView animateWithDuration:1 animations:^{
+        tmpCard.frame = endFrame;
+    } completion:^(BOOL finished) {
+        [tmpCard removeFromSuperview];
+        card.hidden = NO;
+    }];
+}
+/* 全体发牌 */
+- (void)initPutCarsAction {
+    self.cardBgs = @[self.leftFirstCardBg,self.leftSecondCardBg,self.myFirstCardBg,self.mySecondCardBg,self.rightFirstCardBg,self.rightSecondCardBg];
+    self.putCardIndex = 0;
+    self.putCardTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(putCardsAction) userInfo:nil repeats:YES];
+    [self.putCardTimer fire];
+}
+                         
+ - (void)putCardsAction {
+     if (self.putCardIndex < self.cardBgs.count) {
+         [self putCard:self.cardBgs[self.putCardIndex]];
+         self.putCardIndex ++;
+     } else {
+         [self.putCardTimer invalidate];
+         self.putCardTimer = nil;
+         [self allUserRevertCards];
+     }
+ }
+/* 全体翻牌 */
+- (void)allUserRevertCards {
+    [self cardRevert:self.myFirstCardBg animation:YES];
+    [self cardRevert:self.mySecondCardBg animation:YES];
+    [self cardRevert:self.leftFirstCardBg animation:YES];
+    [self cardRevert:self.leftSecondCardBg animation:YES];
+    [self cardRevert:self.rightFirstCardBg animation:YES];
+    [self cardRevert:self.rightSecondCardBg animation:YES];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self initPutCarsAction];
 }
 
 @end

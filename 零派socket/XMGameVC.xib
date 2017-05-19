@@ -9,6 +9,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="XMGameVC">
             <connections>
                 <outlet property="begainButton" destination="WYq-xc-jXV" id="l4i-64-J7K"/>
+                <outlet property="leftCardBg" destination="QM6-ny-fwH" id="4AA-Fw-Tw2"/>
                 <outlet property="leftFirstCardBg" destination="3uU-P0-cq4" id="ujl-4m-k2U"/>
                 <outlet property="leftLeft" destination="ffz-jf-Xa2" id="gvf-km-L3F"/>
                 <outlet property="leftMoney" destination="ojh-Dj-Ric" id="YKy-BQ-rBl"/>

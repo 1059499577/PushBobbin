@@ -20,6 +20,10 @@
 @property (weak, nonatomic) IBOutlet UITextField *textFiled;
 @property (weak, nonatomic) IBOutlet UILabel *statusLable;
 @property (nonatomic, strong) XMSocketManager *socketManager;
+@property (weak, nonatomic) IBOutlet UIButton *connectBtn;
+@property (weak, nonatomic) IBOutlet UIButton *disconnectBtn;
+@property (weak, nonatomic) IBOutlet UIButton *loginBtn;
+
 @end
 
 @implementation ViewController
@@ -28,8 +32,21 @@
     [super viewDidLoad];
     self.socketManager = [XMSocketManager share];
     self.socketManager.delegate = self;
+    [self.socketManager connect];
+    self.connectBtn.hidden = YES;
+    self.disconnectBtn.hidden = YES;
+    [self loginBtnEnable:NO];
+    [self.textFiled addTarget:self action:@selector(inputingUserID) forControlEvents:UIControlEventEditingChanged];
  }
 
+- (void)inputingUserID {
+    if (self.textFiled.text.length > 0 && self.socketManager.socketStatus == SocketStatus_connect) {
+        [self loginBtnEnable:YES];
+    } else {
+        [self loginBtnEnable:NO];
+    }
+    
+}
 - (IBAction)connect:(id)sender {
     [self.socketManager connect];
 }
@@ -55,14 +72,21 @@
         case SocketStatus_connect:
             self.statusLable.text = @"已连接";
             self.statusLable.textColor = [UIColor greenColor];
+            self.disconnectBtn.hidden = NO;
+            self.connectBtn.hidden = YES;
+            [self inputingUserID];
             break;
         case SocketStatus_disconnect:
             self.statusLable.text = @"未连接";
             self.statusLable.textColor = [UIColor redColor];
+            self.disconnectBtn.hidden = YES;
+            self.connectBtn.hidden = NO;
             break;
         case SocketStatus_disconnectByUser:
             self.statusLable.text = @"手动断开";
             self.statusLable.textColor = [UIColor redColor];
+            self.disconnectBtn.hidden = YES;
+            self.connectBtn.hidden = NO;
             break;
         default:
             break;
@@ -108,6 +132,9 @@
         }];
     }
 }
-
+- (void)loginBtnEnable:(BOOL)enable {
+    self.loginBtn.backgroundColor = enable?[UIColor colorWithRed:43/255.0 green:191/255.0 blue:191/255.0 alpha:1] :[UIColor grayColor];
+    self.loginBtn.enabled = enable;
+}
 
 @end

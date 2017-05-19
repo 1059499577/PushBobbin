@@ -17,5 +17,6 @@
 @property (nonatomic, assign) BOOL isOnSeat;//是否上座
 @property (nonatomic, copy) NSString *payMoney;//押注金额
 @property (nonatomic, copy) NSString *formatPayMoney;
+@property (nonatomic, strong) NSArray *cards;
 
 @end
