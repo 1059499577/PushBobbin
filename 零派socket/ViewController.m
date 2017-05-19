@@ -43,7 +43,6 @@
         return;
     }
     [self.socketManager sendMessage:msg];
-    self.textFiled.text = @"";
 }
 
 - (void)SocketManagerStatusChanged:(SocketStatus)status {
@@ -59,6 +58,10 @@
             break;
         case SocketStatus_disconnect:
             self.statusLable.text = @"未连接";
+            self.statusLable.textColor = [UIColor redColor];
+            break;
+        case SocketStatus_disconnectByUser:
+            self.statusLable.text = @"手动断开";
             self.statusLable.textColor = [UIColor redColor];
             break;
         default:
@@ -90,6 +93,7 @@
         [MBProgressHUD showError:@"请链接网络"];
         return;
     }
+    self.textFiled.text = @"";
     [self.socketManager sendDict:@{@"type":@"login",@"user_id":userID}];
 }
 

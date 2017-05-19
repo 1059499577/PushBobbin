@@ -14,6 +14,12 @@
 #import <MJExtension.h>
 #import "XMSocketManager.h"
 
+typedef NS_ENUM(NSUInteger, GameProgress) {
+    GameProgress_RoomNotFull,//人不全
+    GameProgress_RoomFull,//人刚刚全了
+    GameProgress_PayFinish,//平家全都下注完成
+    GameProgress_OwnerStarted,//庄家开牌完成
+};
 @interface XMGameVC ()<UIActionSheetDelegate,XMSocketManagerDelegate>
 /* 我的信息 */
 @property (weak, nonatomic) IBOutlet UILabel *myUseID;
@@ -28,6 +34,11 @@
 @property (weak, nonatomic) IBOutlet UIButton *begainButton;
 @property (weak, nonatomic) IBOutlet UIImageView *myOwnerImage;
 
+@property (weak, nonatomic) IBOutlet UIView *startButtonBg;
+@property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (nonatomic, assign) int selectMoney;//选择的押注金额
+@property (nonatomic, assign) BOOL isPayLock;//我下注锁定
+
 
 /* 左边小人 */
 @property (weak, nonatomic) IBOutlet UILabel *leftUserID;
@@ -36,6 +47,7 @@
 @property (weak, nonatomic) IBOutlet UIView *leftFirstCardBg;
 @property (weak, nonatomic) IBOutlet UIView *leftSecondCardBg;
 @property (weak, nonatomic) IBOutlet UIImageView *leftOwnerImage;
+@property (weak, nonatomic) IBOutlet UILabel *leftPayMoney;
 
 
 /* 右边小人 */
@@ -45,6 +57,7 @@
 @property (weak, nonatomic) IBOutlet UIView *rightFirstCardBg;
 @property (weak, nonatomic) IBOutlet UIView *rightSecondCardBg;
 @property (weak, nonatomic) IBOutlet UIImageView *rightOwnerImage;
+@property (weak, nonatomic) IBOutlet UILabel *rightPayMoney;
 
 
 /* 全局 */
@@ -58,7 +71,7 @@
 /* 数据类 */
 @property (nonatomic, weak) XMUserTool *userTool;
 @property (nonatomic, strong) XMSocketManager *socketManager;
-
+@property (nonatomic, assign) GameProgress gameProgress;//游戏进度
 
 @end
 
@@ -99,6 +112,8 @@
     [self cardRevert:self.rightFirstCardBg animation:NO];
     [self cardRevert:self.rightSecondCardBg animation:NO];
     [self reloadUserOnSeat];
+    self.gameProgress = self.userTool.rightUser == nil?GameProgress_RoomNotFull:GameProgress_RoomFull;
+    [self startButtonEnable:NO];
 }
 /* 刷新在座的状态信息 */
 - (void)reloadUserOnSeat {
@@ -107,18 +122,24 @@
         self.myUseID.text = myUser.user_id;
         self.myMoney.text = myUser.money;
         self.myOwnerImage.hidden = !myUser.isOwner;
+        self.startButtonBg.hidden = !myUser.isOwner;
+        self.myStatus.text = @"已下注";
     }
     XMUserModel *leftUser = self.userTool.leftUser;
     if (leftUser != nil) {
         self.leftUserID.text = leftUser.user_id;
         self.leftMoney.text = leftUser.money;
         self.leftOwnerImage.hidden = !leftUser.isOwner;
+        self.leftStatus.text = @"已下注";
+        self.payMoney.text = leftUser.formatPayMoney;
     }
     XMUserModel *rightUser = self.userTool.rightUser;
     if (rightUser != nil) {
         self.rightUserID.text = rightUser.user_id;
         self.rightMoney.text = rightUser.money;
         self.rightOwnerImage.hidden = !rightUser.isOwner;
+        self.rightStatus.text = @"已下注";
+        self.payMoney.text = rightUser.formatPayMoney;
     }
 }
 
@@ -129,20 +150,33 @@
     [sheet showInView:self.view];
     
 }
+/* 确定下注 */
 - (IBAction)beigainAction:(id)sender {
+    NSString *roomID = self.userTool.room_id;
+    NSString *userID = self.userTool.myUser.user_id;
+    NSString *moneyStr = [NSString stringWithFormat:@"%d",self.selectMoney];
+    [self.socketManager sendDict:@{@"type":@"pay",
+                                   @"room_id":roomID,
+                                   @"user_id":userID,
+                                   @"money":moneyStr}];
+    [self startButtonEnable:NO];
+}
+
+/* 庄家开始发牌 */
+- (IBAction)ownerStartAction:(id)sender {
     
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     switch (buttonIndex) {
         case 0:
-            self.payMoney.text = @"5元";
+            self.selectMoney = 5;
             break;
         case 1:
-            self.payMoney.text = @"10元";
+            self.selectMoney = 10;
             break;
         case 2:
-            self.payMoney.text = @"20元";
+            self.selectMoney = 15;
             break;
         default:
             break;
@@ -194,11 +228,14 @@
         [UIView animateWithDuration:0.7 animations:^{
             self.rightRight.constant = 0;
             [self.view layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            self.gameProgress = GameProgress_RoomFull;
         }];
     }
 }
 
 /* socket代理 */
+#pragma mark - 收到socket信息
 - (void)SocketManagerDidReceiveDict:(NSDictionary *)dict {
     NSString *type = dict[@"type"];
     if ([type isEqualToString:@"start"]) {
@@ -208,6 +245,64 @@
         [[XMUserTool share].users addObjectsFromArray:userModels];
         [[XMUserTool share] reloadUser];
         [self reloadUserOnSeat];
+    } else if ([type isEqualToString:@"pay"]) {
+        NSString *userID = dict[@"user_id"];
+        NSString *money = dict[@"money"];
+       BOOL isPayFinish = [self.userTool payMoney:money withUserID:userID];
+        if (isPayFinish) {
+            [self startButtonEnable:YES];
+            self.gameProgress = GameProgress_PayFinish;
+        }
+        [self reloadUserOnSeat];
+    }
+}
+
+- (void)payButtongEnable:(BOOL)enable {
+    self.payButton.enabled = enable;
+    self.payButton.backgroundColor = enable?[UIColor colorWithRed:43/255.0 green:119/255.0 blue:119/255.0 alpha:1]:[UIColor grayColor];
+}
+
+- (void)begainButtonEnable:(BOOL)enable {
+    self.begainButton.enabled = enable;
+    self.begainButton.backgroundColor = enable?[UIColor colorWithRed:1 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
+}
+
+- (void)startButtonEnable:(BOOL)enable {
+    self.startButton.enabled = enable;
+    self.startButton.backgroundColor = enable?[UIColor colorWithRed:1 green:114/255.0 blue:0 alpha:1]:[UIColor grayColor];
+}
+
+#pragma mark - Getter & Setter
+
+- (void)setGameProgress:(GameProgress)gameProgress {
+    switch (gameProgress) {
+        case GameProgress_RoomNotFull: {
+            [self payButtongEnable:NO];
+            [self begainButtonEnable:NO];
+        }
+            break;
+        case GameProgress_RoomFull: {
+            if (_gameProgress == GameProgress_RoomNotFull) {
+                [self payButtongEnable:YES];
+                self.selectMoney = 5;
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
+    _gameProgress = gameProgress;
+}
+
+- (void)setSelectMoney:(int)selectMoney {
+    _selectMoney = selectMoney;
+    self.payMoney.text = [NSString stringWithFormat:@"%d元",self.selectMoney];
+    int myMoney = [self.userTool.myUser.money intValue];
+    if (myMoney >= self.selectMoney) {
+        [self begainButtonEnable:YES];
+    } else {
+        [self begainButtonEnable:NO];
     }
 }
 

@@ -32,6 +32,7 @@
 
 - (void)SocketManagerDidReceiveDict:(NSDictionary *)dict {
     NSString *type = dict[@"type"];
+    [XMUserTool share].room_id = dict[@"room_id"];
     if ([type isEqualToString:@"start"]) {
         NSArray *users = dict[@"users"];
         NSArray *userModels = [XMUserModel mj_objectArrayWithKeyValuesArray:users];

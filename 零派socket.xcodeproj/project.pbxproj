@@ -27,6 +27,7 @@
 		28AF69AC1ECD514900EAE2F0 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 28AF69A91ECD514900EAE2F0 /* MBProgressHUD.m */; };
 		28AF69B01ECD525D00EAE2F0 /* XMUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 28AF69AF1ECD525D00EAE2F0 /* XMUserModel.m */; };
 		28AF69B31ECD526F00EAE2F0 /* XMUserTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 28AF69B21ECD526F00EAE2F0 /* XMUserTool.m */; };
+		28C047511ECEA3B20069C601 /* XMMessageBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C047501ECEA3B20069C601 /* XMMessageBar.m */; };
 		FB89E0FD2449412272A56A00 /* libPods-零派socket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 104B828A376FF3262AD64F7A /* libPods-零派socket.a */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +86,8 @@
 		28AF69AF1ECD525D00EAE2F0 /* XMUserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMUserModel.m; sourceTree = "<group>"; };
 		28AF69B11ECD526F00EAE2F0 /* XMUserTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMUserTool.h; sourceTree = "<group>"; };
 		28AF69B21ECD526F00EAE2F0 /* XMUserTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMUserTool.m; sourceTree = "<group>"; };
+		28C0474F1ECEA3B20069C601 /* XMMessageBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMMessageBar.h; sourceTree = "<group>"; };
+		28C047501ECEA3B20069C601 /* XMMessageBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMMessageBar.m; sourceTree = "<group>"; };
 		704FDB80D96087B0D2A87D2A /* Pods-零派socket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-零派socket.release.xcconfig"; path = "Pods/Target Support Files/Pods-零派socket/Pods-零派socket.release.xcconfig"; sourceTree = "<group>"; };
 		FEB033A59FDB945DB80649A3 /* Pods-零派socket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-零派socket.debug.xcconfig"; path = "Pods/Target Support Files/Pods-零派socket/Pods-零派socket.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -161,6 +164,8 @@
 				28AF699F1ECD458300EAE2F0 /* XMReadyVC.h */,
 				28AF69A01ECD458300EAE2F0 /* XMReadyVC.m */,
 				28AF69A11ECD458300EAE2F0 /* XMReadyVC.xib */,
+				28C0474F1ECEA3B20069C601 /* XMMessageBar.h */,
+				28C047501ECEA3B20069C601 /* XMMessageBar.m */,
 				28AF68E51ECAA26000EAE2F0 /* Assets.xcassets */,
 				28AF68E71ECAA26000EAE2F0 /* LaunchScreen.storyboard */,
 				28AF68EA1ECAA26000EAE2F0 /* Info.plist */,
@@ -430,6 +435,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28C047511ECEA3B20069C601 /* XMMessageBar.m in Sources */,
 				28AF69A21ECD458300EAE2F0 /* XMReadyVC.m in Sources */,
 				28AF68E11ECAA26000EAE2F0 /* ViewController.m in Sources */,
 				28AF69B31ECD526F00EAE2F0 /* XMUserTool.m in Sources */,

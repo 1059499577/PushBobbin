@@ -13,4 +13,11 @@
 - (BOOL)isOwner {
     return [self.is_owner isEqualToString:@"1"];
 }
+
+- (NSString *)formatPayMoney {
+    if (self.payMoney == nil || self.isOwner) {
+        return @" ";
+    }
+    return [NSString stringWithFormat:@"%@元",self.payMoney];
+}
 @end

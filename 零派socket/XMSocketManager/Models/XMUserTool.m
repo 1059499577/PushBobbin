@@ -82,4 +82,18 @@
     }
     return _users;
 }
+
+- (BOOL)payMoney:(NSString *)money withUserID:(NSString *)userID {
+    for (XMUserModel *user in self.users) {
+        if ([user.user_id isEqualToString:userID]) {
+            user.payMoney = money;
+        }
+    }
+    for (XMUserModel *user in self.users) {
+        if (user.isOwner == NO && user.payMoney == nil) {
+            return NO;
+        }
+    }
+    return YES;  
+}
 @end
