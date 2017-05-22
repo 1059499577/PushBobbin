@@ -84,6 +84,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 @property (nonatomic, strong) CAGradientLayer *griLayer;
 @property (nonatomic, strong) CABasicAnimation *animation;
 @property (nonatomic, assign) BOOL canEnterNextPart;//是否可玩下局
+@property (nonatomic, assign) BOOL canTouchRestart;
 @end
 
 @implementation XMGameVC
@@ -247,6 +248,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
             } completion:^(BOOL finished) {
                 if (self.gameProgress != GameProgress_GameOver) {
                     self.gameProgress = GameProgress_GameOver;
+                    [self reloadUserOnSeat];
                 }
             }];
         }];
@@ -335,10 +337,8 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         }
             break;
         case GameProgress_RoomFull: {
-            if (_gameProgress == GameProgress_RoomNotFull) {
                 [self payButtongEnable:YES];
                 self.selectMoney = 5;
-            }
         }
             break;
         case GameProgress_PayFinish: {
@@ -351,7 +351,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         }
             break;
         case GameProgress_GameOver: {
-            [self performSelector:@selector(showTouchReset) withObject:nil afterDelay:1];
+            [self performSelector:@selector(showTouchReset) withObject:nil afterDelay:3];
         }
             break;
             
@@ -369,6 +369,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         self.nextPartLabel.alpha = 1;
     } completion:^(BOOL finished) {
         self.nextPartLabel.layer.mask = self.griLayer;
+        self.canTouchRestart = YES;
     }];
 }
 
@@ -419,10 +420,34 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
      } else {
          [self.putCardTimer invalidate];
          self.putCardTimer = nil;
-         [self reloadUserOnSeat];
+         [self reloadCardsOnSeat];
          [self allUserRevertCards];
      }
  }
+- (void)reloadCardsOnSeat {
+    XMUserModel *myUser = self.userTool.myUser;
+    if (myUser != nil) {
+        if (myUser.cards.count == 2) {
+            self.myFirstCardBg.tag = [myUser.cards[0] intValue];
+            self.mySecondCardBg.tag = [myUser.cards[1] intValue];
+        }
+    }
+    XMUserModel *leftUser = self.userTool.leftUser;
+    if (leftUser != nil) {
+        if (leftUser.cards.count == 2) {
+            self.leftFirstCardBg.tag = [leftUser.cards[0] intValue];
+            self.leftSecondCardBg.tag = [leftUser.cards[1] intValue];
+        }
+    }
+    XMUserModel *rightUser = self.userTool.rightUser;
+    if (rightUser != nil) {
+        if (rightUser.cards.count == 2) {
+            self.rightFirstCardBg.tag = [rightUser.cards[0] intValue];
+            self.rightSecondCardBg.tag = [rightUser.cards[1] intValue];
+        }
+    }
+
+}
 /* 全体翻牌 */
 - (void)allUserRevertCards {
     [self cardRevert:self.myFirstCardBg animation:YES];
@@ -434,7 +459,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (self.gameProgress == GameProgress_GameOver && self.canEnterNextPart) {
+    if (self.gameProgress == GameProgress_GameOver  && self.canTouchRestart) {
         if (self.canEnterNextPart) {
             self.gameProgress = GameProgress_RoomFull;
             self.nextPartLabel.alpha = 0;
