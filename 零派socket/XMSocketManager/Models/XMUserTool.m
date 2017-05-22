@@ -96,4 +96,27 @@
     }
     return YES;  
 }
+
+- (void)resetUsers {
+    for (XMUserModel *user in self.users) {
+        user.payMoney = nil;
+        user.result = nil;
+        user.cards = nil;
+        
+    }
+}
+
+- (void)putCardsWithArray:(NSArray *)array {
+    for (NSDictionary *userDict in array) {
+        for (XMUserModel *user in self.users) {
+            if ([user.user_id isEqualToString:userDict[@"user_id"]]) {
+                user.cards = userDict[@"cards"];
+                user.money = [NSString stringWithFormat:@"%@",userDict[@"money"]];
+                user.result = userDict[@"resault"];
+                user.payMoney = nil;
+                break;
+            }
+        }
+    }
+}
 @end

@@ -18,7 +18,9 @@
 @end
 
 @implementation XMReadyVC
-
+- (void)viewDidAppear:(BOOL)animated {
+    self.socketManager.delegate = self;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.socketManager = [XMSocketManager share];

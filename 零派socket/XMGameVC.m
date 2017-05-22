@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
     GameProgress_RoomFull,//人刚刚全了
     GameProgress_PayFinish,//平家全都下注完成
     GameProgress_OwnerStarted,//庄家开牌完成
+    GameProgress_GameOver//游戏结束
 };
 @interface XMGameVC ()<UIActionSheetDelegate,XMSocketManagerDelegate>
 /* 我的信息 */
@@ -78,8 +79,11 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 @property (nonatomic, strong) NSTimer *putCardTimer;
 @property (nonatomic, strong) NSArray *cardBgs;
 @property (nonatomic, assign)int putCardIndex;
-
-
+/* 提示点击开始下一局 */
+@property (weak, nonatomic) IBOutlet UILabel *nextPartLabel;
+@property (nonatomic, strong) CAGradientLayer *griLayer;
+@property (nonatomic, strong) CABasicAnimation *animation;
+@property (nonatomic, assign) BOOL canEnterNextPart;//是否可玩下局
 @end
 
 @implementation XMGameVC
@@ -125,20 +129,42 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 /* 刷新在座的状态信息 */
 - (void)reloadUserOnSeat {
     XMUserModel *myUser = self.userTool.myUser;
+    UIColor *green = [UIColor greenColor];
+    UIColor *red = [UIColor redColor];
     if (myUser != nil) {
         self.myUseID.text = myUser.user_id;
         self.myMoney.text = myUser.money;
         self.myOwnerImage.hidden = !myUser.isOwner;
         self.startButtonBg.hidden = !myUser.isOwner;
-        self.myStatus.text = myUser.payMoney == nil?@"未下注":@"已下注";
+        if (self.gameProgress == GameProgress_GameOver) {
+            self.myStatus.text = myUser.result.intValue > 0?@"赢":@"输";
+            self.myStatus.textColor = myUser.result.intValue > 0?green:red;
+        } else {
+            self.myStatus.text = myUser.payMoney == nil?@"未下注":@"已下注";
+            self.myStatus.textColor = myUser.payMoney == nil?red:green;
+        }
+        if (myUser.cards.count == 2) {
+            self.myFirstCardBg.tag = [myUser.cards[0] intValue];
+            self.mySecondCardBg.tag = [myUser.cards[1] intValue];
+        }
     }
     XMUserModel *leftUser = self.userTool.leftUser;
     if (leftUser != nil) {
         self.leftUserID.text = leftUser.user_id;
         self.leftMoney.text = leftUser.money;
         self.leftOwnerImage.hidden = !leftUser.isOwner;
-        self.leftStatus.text = leftUser.payMoney == nil?@"未下注":@"已下注";
         self.leftPayMoney.text = leftUser.formatPayMoney;
+        if (self.gameProgress == GameProgress_GameOver) {
+            self.leftStatus.text = leftUser.result.intValue > 0?@"赢":@"输";
+            self.leftStatus.textColor = leftUser.result.intValue > 0?green:red;
+        } else {
+            self.leftStatus.text = leftUser.payMoney == nil?@"未下注":@"已下注";
+            self.leftStatus.textColor = leftUser.payMoney == nil?red:green;
+        }
+        if (leftUser.cards.count == 2) {
+            self.leftFirstCardBg.tag = [leftUser.cards[0] intValue];
+            self.leftSecondCardBg.tag = [leftUser.cards[1] intValue];
+        }
     }
     XMUserModel *rightUser = self.userTool.rightUser;
     if (rightUser != nil) {
@@ -147,6 +173,19 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         self.rightOwnerImage.hidden = !rightUser.isOwner;
         self.rightStatus.text = rightUser.payMoney == nil?@"未下注":@"已下注";
         self.rightPayMoney.text = rightUser.formatPayMoney;
+        
+        if (self.gameProgress == GameProgress_GameOver) {
+            self.rightStatus.text = rightUser.result.intValue > 0?@"赢":@"输";
+            self.rightStatus.textColor = rightUser.result.intValue > 0?green:red;
+        } else {
+            self.rightStatus.text = rightUser.payMoney == nil?@"未下注":@"已下注";
+            self.rightStatus.textColor = rightUser.payMoney == nil?red:green;
+        }
+        self.rightPayMoney.text = rightUser.formatPayMoney;
+        if (rightUser.cards.count == 2) {
+            self.rightFirstCardBg.tag = [rightUser.cards[0] intValue];
+            self.rightSecondCardBg.tag = [rightUser.cards[1] intValue];
+        }
     }
 }
 
@@ -198,14 +237,17 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 /* 筒子翻转 */
 - (void)cardRevert:(UIView *)card animation:(BOOL)animate {
     if (animate) {
-        [UIView animateWithDuration:1 animations:^{
+        [UIView animateWithDuration:0.5 animations:^{
             card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI_2, 0, 1, 0);
         } completion:^(BOOL finished) {
-            [card setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"3"]]];
-            [UIView animateWithDuration:1 animations:^{
+            NSString *imageName = [NSString stringWithFormat:@"%ld",(long)card.tag];
+            [card setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:imageName]]];
+            [UIView animateWithDuration:0.5 animations:^{
                 card.layer.transform = CATransform3DRotate(card.layer.transform, M_PI_2, 0, 1, 0);
             } completion:^(BOOL finished) {
-                
+                if (self.gameProgress != GameProgress_GameOver) {
+                    self.gameProgress = GameProgress_GameOver;
+                }
             }];
         }];
     } else {
@@ -261,7 +303,11 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         }
         [self reloadUserOnSeat];
     } else if ([type isEqualToString:@"over"]) {
-        
+        self.gameProgress = GameProgress_OwnerStarted;
+        self.canEnterNextPart = [dict[@"is_over"] isEqualToString:@"0"];
+        NSArray *tmpArray = dict[@"users"];
+        [self.userTool putCardsWithArray:tmpArray];
+        [self initPutCarsAction];
     }
 }
 
@@ -304,6 +350,10 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
             NSLog(@"庄家发牌完成");
         }
             break;
+        case GameProgress_GameOver: {
+            [self performSelector:@selector(showTouchReset) withObject:nil afterDelay:1];
+        }
+            break;
             
         default:
             break;
@@ -311,6 +361,18 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
     _gameProgress = gameProgress;
 }
 
+- (void)showTouchReset {
+    self.nextPartLabel.alpha = 0;
+    self.nextPartLabel.hidden = NO;
+    
+    [UIView animateWithDuration:1 animations:^{
+        self.nextPartLabel.alpha = 1;
+    } completion:^(BOOL finished) {
+        self.nextPartLabel.layer.mask = self.griLayer;
+    }];
+}
+
+/* 选择押注金额 */
 - (void)setSelectMoney:(int)selectMoney {
     _selectMoney = selectMoney;
     self.payMoney.text = [NSString stringWithFormat:@"%d元",self.selectMoney];
@@ -357,6 +419,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
      } else {
          [self.putCardTimer invalidate];
          self.putCardTimer = nil;
+         [self reloadUserOnSeat];
          [self allUserRevertCards];
      }
  }
@@ -371,7 +434,50 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self initPutCarsAction];
+    if (self.gameProgress == GameProgress_GameOver && self.canEnterNextPart) {
+        if (self.canEnterNextPart) {
+            self.gameProgress = GameProgress_RoomFull;
+            self.nextPartLabel.alpha = 0;
+            [self.userTool resetUsers];
+            [self reloadUserOnSeat];
+            for (UIView *card in self.cardBgs) {
+                card.hidden = YES;
+            }
+        } else {
+            [self dismissViewControllerAnimated:YES completion:^{
+                
+            }];
+        }
+        
+    }
+}
+
+- (CAGradientLayer *)griLayer {
+    if (!_griLayer) {
+        _griLayer = [[CAGradientLayer alloc] init];
+        
+        _griLayer.colors = @[(__bridge id)[UIColor blackColor].CGColor,(__bridge id)[UIColor colorWithWhite:1 alpha:0.3].CGColor,(__bridge id)[UIColor blackColor].CGColor];
+        _griLayer.frame = _nextPartLabel.bounds;
+        _griLayer.startPoint = CGPointMake(0, 0.5);
+        _griLayer.endPoint = CGPointMake(1, 0.5);
+        _griLayer.locations = @[@0, @0.15, @0.3];
+        [_griLayer addAnimation:self.animation forKey:nil];
+    }
+    return _griLayer;
+}
+
+- (CABasicAnimation *)animation {
+    if (!_animation) {
+        _animation = [[CABasicAnimation alloc] init];
+        _animation.keyPath = @"locations";
+        _animation.fromValue = @[@0,@(0.15),@(0.3)];
+        _animation.toValue = @[@0.7,@0.85,@1.0];
+        _animation.repeatCount = NSIntegerMax;
+        _animation.duration = 2;
+        _animation.removedOnCompletion = NO;
+        
+    }
+    return _animation;
 }
 
 @end

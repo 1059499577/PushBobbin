@@ -7,7 +7,7 @@
 //
 
 #import "XMUserModel.h"
-
+#import <UIKit/UIKit.h>
 
 @implementation XMUserModel
 - (BOOL)isOwner {
@@ -15,9 +15,14 @@
 }
 
 - (NSString *)formatPayMoney {
+    if (self.result != nil) {
+        return [NSString stringWithFormat:@"%@元",self.result];
+    }
+
     if (self.payMoney == nil || self.isOwner) {
         return @" ";
     }
     return [NSString stringWithFormat:@"%@元",self.payMoney];
 }
+
 @end

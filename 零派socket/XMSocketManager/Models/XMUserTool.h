@@ -22,4 +22,8 @@
 + (instancetype)share;
 /* 返回值为是否平家全部押注完毕 */
 - (BOOL)payMoney:(NSString *)money withUserID:(NSString *)userID;
+
+- (void)resetUsers;
+
+- (void)putCardsWithArray:(NSArray *)array;
 @end

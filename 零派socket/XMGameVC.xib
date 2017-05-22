@@ -28,6 +28,7 @@
                 <outlet property="mySecondCardBg" destination="B3u-n4-CpF" id="Cav-CO-MU9"/>
                 <outlet property="myStatus" destination="SdK-1c-bfw" id="8Wd-Jp-8pl"/>
                 <outlet property="myUseID" destination="ylO-5X-dEj" id="Ngp-24-Hhq"/>
+                <outlet property="nextPartLabel" destination="7xy-BX-mWX" id="khE-Oo-MeP"/>
                 <outlet property="payButton" destination="tWe-1T-YXn" id="oIW-lf-vui"/>
                 <outlet property="payMoney" destination="E6c-WA-f65" id="AhD-iN-xUf"/>
                 <outlet property="rightFirstCardBg" destination="wtY-zh-S8E" id="Jge-gg-ZIG"/>
@@ -667,17 +668,24 @@
                         <constraint firstAttribute="width" constant="250" id="v8I-dU-3bf"/>
                     </constraints>
                 </view>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="点击开始下一局" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7xy-BX-mWX">
+                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="0.94509803920000002" green="0.32549019610000002" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="h6P-x4-QMI" firstAttribute="top" secondItem="AGT-7a-WND" secondAttribute="bottom" id="Ewe-Cs-0Qo"/>
                 <constraint firstAttribute="trailing" secondItem="h6P-x4-QMI" secondAttribute="trailing" id="H76-io-nqG"/>
+                <constraint firstItem="7xy-BX-mWX" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="120" id="RIy-PY-adh"/>
                 <constraint firstItem="AGT-7a-WND" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Ugs-tg-zvI"/>
                 <constraint firstItem="2N4-57-WqO" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="WVX-Pw-Geo"/>
                 <constraint firstItem="h6P-x4-QMI" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="d5Y-ft-92N"/>
                 <constraint firstItem="h6P-x4-QMI" firstAttribute="top" secondItem="2N4-57-WqO" secondAttribute="bottom" id="diV-Dl-p1B"/>
                 <constraint firstItem="AGT-7a-WND" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="ffz-jf-Xa2"/>
                 <constraint firstAttribute="bottom" secondItem="h6P-x4-QMI" secondAttribute="bottom" id="pOr-UR-tHV"/>
+                <constraint firstItem="7xy-BX-mWX" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="s1M-Wo-b0A"/>
                 <constraint firstAttribute="trailing" secondItem="2N4-57-WqO" secondAttribute="trailing" id="sZS-oh-gE1"/>
             </constraints>
             <point key="canvasLocation" x="23.5" y="-70.5"/>
