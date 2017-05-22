@@ -117,15 +117,19 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
         self.rightMoneyBottom.constant = 5;
         [self.view layoutIfNeeded];
     }
+    [self initRevertAllCards];
+    [self reloadUserOnSeat];
+    self.gameProgress = self.userTool.rightUser == nil?GameProgress_RoomNotFull:GameProgress_RoomFull;
+    [self startButtonEnable:NO];
+}
+/* 初始化翻转所有牌 */
+- (void)initRevertAllCards {
     [self cardRevert:self.myFirstCardBg animation:NO];
     [self cardRevert:self.mySecondCardBg animation:NO];
     [self cardRevert:self.leftFirstCardBg animation:NO];
     [self cardRevert:self.leftSecondCardBg animation:NO];
     [self cardRevert:self.rightFirstCardBg animation:NO];
     [self cardRevert:self.rightSecondCardBg animation:NO];
-    [self reloadUserOnSeat];
-    self.gameProgress = self.userTool.rightUser == nil?GameProgress_RoomNotFull:GameProgress_RoomFull;
-    [self startButtonEnable:NO];
 }
 /* 刷新在座的状态信息 */
 - (void)reloadUserOnSeat {
@@ -468,6 +472,7 @@ typedef NS_ENUM(NSUInteger, GameProgress) {
             for (UIView *card in self.cardBgs) {
                 card.hidden = YES;
             }
+            [self initRevertAllCards];
         } else {
             [self dismissViewControllerAnimated:YES completion:^{
                 
